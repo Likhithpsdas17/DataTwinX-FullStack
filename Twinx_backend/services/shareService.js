@@ -46,6 +46,34 @@ const findTwinForDocument = async (documentId) => {
   return twin;
 };
 
+const logUnauthorizedAccess = async (shareLink, reason, reqMeta = {}) => {
+  const documentId =
+    shareLink.document._id || shareLink.document;
+
+  await DigitalTwin.findByIdAndUpdate(shareLink.twin, {
+    $inc: { "analytics.unauthorizedAttempts": 1 },
+  });
+
+  await lifecycleService.logActivity({
+    documentId,
+    twinId: shareLink.twin,
+    ownerId: shareLink.owner,
+    event: LIFECYCLE_EVENTS.UNAUTHORIZED_ACCESS,
+    actor: "anonymous",
+    metadata: {
+      reason,
+      token: shareLink.token,
+      shareLinkId: shareLink._id,
+    },
+    ...getReqMeta(reqMeta),
+  });
+};
+
+const denyAccess = async (shareLink, reason, reqMeta = {}) => {
+  await logUnauthorizedAccess(shareLink, reason, reqMeta);
+  throw new ApiError(403, reason);
+};
+
 const markExpired = async (shareLink, reqMeta = {}) => {
   if (shareLink.status === SHARE_STATUS.EXPIRED) {
     return shareLink;
@@ -83,7 +111,7 @@ const validateShareLink = async (token, reqMeta = {}) => {
   }
 
   if (shareLink.status === SHARE_STATUS.REVOKED) {
-    throw new ApiError(403, "Share link has been revoked");
+    await denyAccess(shareLink, "Share link has been revoked", reqMeta);
   }
 
   if (
@@ -95,18 +123,18 @@ const validateShareLink = async (token, reqMeta = {}) => {
   }
 
   if (shareLink.status === SHARE_STATUS.EXPIRED) {
-    throw new ApiError(403, "Share link has expired");
+    await denyAccess(shareLink, "Share link has expired", reqMeta);
   }
 
   if (
     shareLink.restrictions.maxViews != null &&
     shareLink.usage.viewCount >= shareLink.restrictions.maxViews
   ) {
-    throw new ApiError(403, "Maximum view limit reached");
+    await denyAccess(shareLink, "Maximum view limit reached", reqMeta);
   }
 
   if (shareLink.restrictions.oneTimeView && shareLink.usage.hasBeenViewed) {
-    throw new ApiError(403, "One-time access already used");
+    await denyAccess(shareLink, "One-time access already used", reqMeta);
   }
 
   return shareLink;
@@ -233,14 +261,14 @@ const downloadShare = async (token, reqMeta = {}) => {
     shareLink.restrictions.viewOnly ||
     shareLink.restrictions.allowDownload === false
   ) {
-    throw new ApiError(403, "Download not allowed for this share link");
+    await denyAccess(shareLink, "Download not allowed for this share link", reqMeta);
   }
 
   if (
     shareLink.restrictions.downloadLimit != null &&
     shareLink.usage.downloadCount >= shareLink.restrictions.downloadLimit
   ) {
-    throw new ApiError(403, "Download limit reached");
+    await denyAccess(shareLink, "Download limit reached", reqMeta);
   }
 
   if (!fs.existsSync(document.filePath)) {

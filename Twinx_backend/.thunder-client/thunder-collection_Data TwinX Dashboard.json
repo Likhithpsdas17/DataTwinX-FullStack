@@ -1,0 +1,34 @@
+{
+  "colId": "dtx-dashboard-col",
+  "name": "Data TwinX Dashboard",
+  "sortNum": 40000,
+  "created": "2026-06-09T00:00:00.000Z",
+  "modified": "2026-06-09T00:00:00.000Z",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "dtx-dashboard-overview",
+      "colId": "dtx-dashboard-col",
+      "containerId": "",
+      "name": "1. Dashboard Overview",
+      "url": "{{baseUrl}}/api/dashboard/overview",
+      "method": "GET",
+      "sortNum": 10000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" }
+      ],
+      "docs": "Returns user stats, trust/risk breakdown, recent activity, recent documents, and summary. Requires JWT."
+    },
+    {
+      "_id": "dtx-dashboard-no-token",
+      "colId": "dtx-dashboard-col",
+      "containerId": "",
+      "name": "2. Dashboard — No Token (401)",
+      "url": "{{baseUrl}}/api/dashboard/overview",
+      "method": "GET",
+      "sortNum": 20000,
+      "headers": [],
+      "docs": "Expects 401 Unauthorized."
+    }
+  ]
+}

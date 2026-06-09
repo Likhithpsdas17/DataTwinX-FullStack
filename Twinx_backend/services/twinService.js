@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const DigitalTwin = require("../models/DigitalTwin");
 const ApiError = require("../utils/ApiError");
 const lifecycleService = require("./lifecycleService");
+const { formatTrustProfile } = require("./trustService");
 
 const formatActivity = (log) => ({
   id: log._id,
@@ -45,4 +46,13 @@ const getTimeline = async (ownerId, twinIdParam) => {
   };
 };
 
-module.exports = { getTimeline };
+const getTrust = async (ownerId, twinIdParam) => {
+  const twin = await findTwinForOwner(ownerId, twinIdParam);
+
+  return {
+    twinObjectId: twin._id,
+    ...formatTrustProfile(twin),
+  };
+};
+
+module.exports = { getTimeline, getTrust };

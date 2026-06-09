@@ -71,6 +71,19 @@
         { "name": "Authorization", "value": "Bearer {{token}}" }
       ],
       "docs": "Set {{twinId}} to DTX-XXXXXXXX from document upload response."
+    },
+    {
+      "_id": "dtx-share-trust",
+      "colId": "dtx-sharing-col",
+      "containerId": "",
+      "name": "6. Get Twin Trust Profile",
+      "url": "{{baseUrl}}/api/twins/{{twinId}}/trust",
+      "method": "GET",
+      "sortNum": 60000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" }
+      ],
+      "docs": "Returns trustScore, healthStatus, riskLevel, recommendations, and analytics."
     }
   ]
 }

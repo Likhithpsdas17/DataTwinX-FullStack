@@ -1,5 +1,6 @@
 const ActivityLog = require("../models/ActivityLog");
-const { LIFECYCLE_EVENTS } = require("../config/constants");
+const { LIFECYCLE_EVENTS, TRUST_TRIGGER_EVENTS } = require("../config/constants");
+const trustService = require("./trustService");
 
 const logActivity = async ({
   documentId,
@@ -23,12 +24,19 @@ const logActivity = async ({
     userAgent,
   };
 
+  let log;
+
   if (session) {
-    const [log] = await ActivityLog.create([payload], { session });
-    return log;
+    [log] = await ActivityLog.create([payload], { session });
+  } else {
+    log = await ActivityLog.create(payload);
+
+    if (TRUST_TRIGGER_EVENTS.includes(event)) {
+      await trustService.reassessTrust(twinId, { triggeringEvent: event });
+    }
   }
 
-  return ActivityLog.create(payload);
+  return log;
 };
 
 const getTimeline = async (twinId, limit = 50) => {
