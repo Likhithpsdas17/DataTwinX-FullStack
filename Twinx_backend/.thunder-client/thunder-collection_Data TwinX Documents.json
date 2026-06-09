@@ -1,0 +1,105 @@
+{
+  "colId": "dtx-documents-col",
+  "name": "Data TwinX Documents",
+  "sortNum": 20000,
+  "created": "2026-06-09T00:00:00.000Z",
+  "modified": "2026-06-09T00:00:00.000Z",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "dtx-doc-upload",
+      "colId": "dtx-documents-col",
+      "containerId": "",
+      "name": "1. Upload Document",
+      "url": "{{baseUrl}}/api/documents/upload",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2026-06-09T00:00:00.000Z",
+      "modified": "2026-06-09T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{token}}"
+        }
+      ],
+      "params": [],
+      "body": {
+        "type": "formdata",
+        "form": [
+          {
+            "name": "file",
+            "value": "",
+            "isFile": true
+          }
+        ]
+      },
+      "tests": [],
+      "docs": "Multipart form-data. Set file field to a PDF, JPEG, PNG, or DOC/DOCX (max 10MB). Requires {{token}} from Auth collection."
+    },
+    {
+      "_id": "dtx-doc-list",
+      "colId": "dtx-documents-col",
+      "containerId": "",
+      "name": "2. List My Documents",
+      "url": "{{baseUrl}}/api/documents",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-06-09T00:00:00.000Z",
+      "modified": "2026-06-09T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{token}}"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "docs": "Returns all documents and their Digital Twins for the authenticated user."
+    },
+    {
+      "_id": "dtx-doc-get",
+      "colId": "dtx-documents-col",
+      "containerId": "",
+      "name": "3. Get Document by ID",
+      "url": "{{baseUrl}}/api/documents/{{documentId}}",
+      "method": "GET",
+      "sortNum": 30000,
+      "created": "2026-06-09T00:00:00.000Z",
+      "modified": "2026-06-09T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{token}}"
+        }
+      ],
+      "params": [],
+      "tests": [],
+      "docs": "Set {{documentId}} from upload response data.document.id"
+    },
+    {
+      "_id": "dtx-doc-upload-no-token",
+      "colId": "dtx-documents-col",
+      "containerId": "",
+      "name": "4. Upload — No Token (401)",
+      "url": "{{baseUrl}}/api/documents/upload",
+      "method": "POST",
+      "sortNum": 40000,
+      "created": "2026-06-09T00:00:00.000Z",
+      "modified": "2026-06-09T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "body": {
+        "type": "formdata",
+        "form": [
+          {
+            "name": "file",
+            "value": "",
+            "isFile": true
+          }
+        ]
+      },
+      "tests": [],
+      "docs": "Expects 401 Unauthorized."
+    }
+  ]
+}

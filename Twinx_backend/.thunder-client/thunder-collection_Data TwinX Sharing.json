@@ -1,0 +1,76 @@
+{
+  "colId": "dtx-sharing-col",
+  "name": "Data TwinX Sharing",
+  "sortNum": 30000,
+  "created": "2026-06-09T00:00:00.000Z",
+  "modified": "2026-06-09T00:00:00.000Z",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "dtx-share-create",
+      "colId": "dtx-sharing-col",
+      "containerId": "",
+      "name": "1. Create Share Link",
+      "url": "{{baseUrl}}/api/share/{{documentId}}",
+      "method": "POST",
+      "sortNum": 10000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"expiresAt\": \"2026-12-31T23:59:59.000Z\",\n  \"maxViews\": 10,\n  \"allowDownload\": true,\n  \"oneTimeAccess\": false\n}"
+      },
+      "docs": "Set {{documentId}} from Documents collection. Copy data.token to {{shareToken}}."
+    },
+    {
+      "_id": "dtx-share-public-view",
+      "colId": "dtx-sharing-col",
+      "containerId": "",
+      "name": "2. Public View Share",
+      "url": "{{baseUrl}}/public/share/{{shareToken}}",
+      "method": "GET",
+      "sortNum": 20000,
+      "headers": [],
+      "docs": "No auth required. Logs VIEW event."
+    },
+    {
+      "_id": "dtx-share-public-download",
+      "colId": "dtx-sharing-col",
+      "containerId": "",
+      "name": "3. Public Download Share",
+      "url": "{{baseUrl}}/public/share/{{shareToken}}/download",
+      "method": "GET",
+      "sortNum": 30000,
+      "headers": [],
+      "docs": "No auth required. Logs DOWNLOAD event. Returns file."
+    },
+    {
+      "_id": "dtx-share-revoke",
+      "colId": "dtx-sharing-col",
+      "containerId": "",
+      "name": "4. Revoke Share Link",
+      "url": "{{baseUrl}}/api/share/{{shareLinkId}}",
+      "method": "DELETE",
+      "sortNum": 40000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" }
+      ],
+      "docs": "Set {{shareLinkId}} from create share response data.shareLink.id"
+    },
+    {
+      "_id": "dtx-share-timeline",
+      "colId": "dtx-sharing-col",
+      "containerId": "",
+      "name": "5. Get Twin Timeline",
+      "url": "{{baseUrl}}/api/twins/{{twinId}}/timeline",
+      "method": "GET",
+      "sortNum": 50000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" }
+      ],
+      "docs": "Set {{twinId}} to DTX-XXXXXXXX from document upload response."
+    }
+  ]
+}
