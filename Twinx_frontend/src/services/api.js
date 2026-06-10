@@ -49,3 +49,26 @@ export async function predictTrustScore(documentId, token) {
   return response.json();
 }
 
+export const getDashboardOverview = async () => {
+  const token = localStorage.getItem('dtx_token');
+  
+  const response = await fetch(`${BASE_URL}/dashboard/overview`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch dashboard data: ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  
+  if (!result.success) {
+    throw new Error(result.message || 'Failed to retrieve dashboard overview.');
+  }
+
+  return result.data;
+};

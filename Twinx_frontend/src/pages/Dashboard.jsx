@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { predictTrustScore, uploadDocument } from '../services/api';
+import { predictTrustScore, uploadDocument, getDashboardOverview } from '../services/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,6 +12,10 @@ export default function Dashboard() {
   const [scoreResult, setScoreResult] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [overviewData, setOverviewData] = useState(null);
+  const [metricsLoading, setMetricsLoading] = useState(true);
+  const [metricsError, setMetricsError] = useState(null);
 
   const logout = () => {
     localStorage.removeItem('dtx_token');
@@ -68,6 +72,28 @@ export default function Dashboard() {
     }
   };
 
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        setMetricsLoading(true);
+  
+        const data = await getDashboardOverview();
+  
+        setOverviewData(data);
+        setMetricsError(null);
+      } catch (err) {
+        setMetricsError(
+          err.message || "Could not load analytics data."
+        );
+      } finally {
+        setMetricsLoading(false);
+      }
+    };
+  
+    fetchMetrics();
+  }, []);
+
   return (
     <div className="dashboard-page">
       <header className="dashboard-header">
@@ -79,6 +105,37 @@ export default function Dashboard() {
           Logout
         </button>
       </header>
+
+      <div className="dashboard-analytics-header" style={{ marginBottom: '24px' }}>
+        {metricsLoading && <div className="metrics-loading">Loading overview metrics...</div>}
+        
+        {metricsError && <div className="metrics-error" style={{ color: 'red' }}>Error: {metricsError}</div>}
+        
+        {!metricsLoading && !metricsError && overviewData && (
+          <div className="analytics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
+            <div className="analytic-card">
+              <h4>Average Trust Score</h4>
+              <p>{overviewData.trustStatistics?.averageTrustScore ?? 0}%</p>
+            </div>
+            <div className="analytic-card">
+              <h4>Total Documents</h4>
+              <p>{overviewData.userStatistics?.totalDocuments ?? 0}</p>
+            </div>
+            <div className="analytic-card">
+              <h4>Total Shares</h4>
+              <p>{overviewData.userStatistics?.totalShares ?? 0}</p>
+            </div>
+            <div className="analytic-card">
+              <h4>Total Views</h4>
+              <p>{overviewData.userStatistics?.totalViews ?? 0}</p>
+            </div>
+            <div className="analytic-card">
+              <h4>Total Downloads</h4>
+              <p>{overviewData.userStatistics?.totalDownloads ?? 0}</p>
+            </div>
+          </div>
+        )}
+      </div>
 
       <section className="dashboard-grid">
         <article className="panel">

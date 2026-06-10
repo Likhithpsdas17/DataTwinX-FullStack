@@ -37,18 +37,19 @@ export default function Auth() {
         email: form.email,
         password: form.password
       });
+      console.log("LOGIN RESPONSE", loginResponse);
 
-      localStorage.setItem('dtx_token', loginResponse.token || 'demo-token');
-      localStorage.setItem('dtx_user', form.name || form.email);
+      localStorage.setItem(
+        'dtx_token',
+        loginResponse.data.token
+      );
+      
+      localStorage.setItem(
+        'dtx_user',
+        loginResponse.data.user.name
+      );
       navigate('/dashboard');
     } catch (err) {
-      // Demo fallback keeps UI functional before backend integration.
-      if (mode === 'signup') {
-        localStorage.setItem('dtx_token', 'demo-token');
-        localStorage.setItem('dtx_user', form.name || form.email);
-        navigate('/dashboard');
-        return;
-      }
       setError(err.message || 'Something went wrong');
     } finally {
       setLoading(false);
