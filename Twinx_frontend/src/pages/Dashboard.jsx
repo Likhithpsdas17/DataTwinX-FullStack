@@ -30,6 +30,7 @@ const [metricsError, setMetricsError] = useState(null);
 
 const fileInputRef = useRef(null);
 
+
 const logout = () => {
   localStorage.removeItem('dtx_token');
   localStorage.removeItem('dtx_user');
@@ -118,6 +119,7 @@ return (
         <button className="nav-item"><Icons.Sharing /> <span>Sharing</span></button>
         <button className="nav-item"><Icons.Analytics /> <span>Analytics</span></button>
         <button className="nav-item"><Icons.Settings /> <span>Settings</span></button>
+
         <button className="nav-item nav-item-logout" onClick={logout}>
           <Icons.Logout /> <span>Logout</span>
         </button>
