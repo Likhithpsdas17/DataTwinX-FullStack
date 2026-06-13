@@ -154,9 +154,9 @@ export default function Home() {
               </span>
 
               <h2>
-                Monitor Everything From
+                Monitor Everything 
                 <br />
-                One Dashboard
+                From One Dashboard
               </h2>
 
               <p>

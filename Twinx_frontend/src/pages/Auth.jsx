@@ -1,102 +1,133 @@
-import { useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { loginUser, registerUser } from '../services/api';
+import { useState } from "react";
 
 export default function Auth() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const defaultMode = useMemo(() => {
-    const query = new URLSearchParams(location.search);
-    return query.get('mode') === 'signup' ? 'signup' : 'login';
-  }, [location.search]);
 
-  const [mode, setMode] = useState(defaultMode);
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: ''
+  const [isLogin, setIsLogin] = useState(true);
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      if (mode === 'signup') {
-        await registerUser(form);
-      }
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-      const loginResponse = await loginUser({
-        email: form.email,
-        password: form.password
+    if (isLogin) {
+      console.log("Login Data:", {
+        email: formData.email,
+        password: formData.password,
       });
-      console.log("LOGIN RESPONSE", loginResponse);
-
-      localStorage.setItem(
-        'dtx_token',
-        loginResponse.data.token
-      );
-      
-      localStorage.setItem(
-        'dtx_user',
-        loginResponse.data.user.name
-      );
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
+    } else {
+      console.log("Register Data:", formData);
     }
   };
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <h1>{mode === 'login' ? 'Welcome Back' : 'Create Account'}</h1>
-        <p>Access the Data TwinX platform and monitor your document trust lifecycle.</p>
 
-        <div className="mode-toggle">
-          <button className={mode === 'login' ? 'active' : ''} onClick={() => setMode('login')}>
-            Login
-          </button>
-          <button className={mode === 'signup' ? 'active' : ''} onClick={() => setMode('signup')}>
-            Sign Up
-          </button>
+      <div className="auth-card">
+
+        <div className="auth-logo">
+          Data TwinX
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          {mode === 'signup' && (
-            <label>
-              Full Name
-              <input name="name" value={form.name} onChange={handleChange} required />
-            </label>
+        <h1>
+          {isLogin ? "Welcome Back" : "Create Account"}
+        </h1>
+
+        <p>
+          {isLogin
+            ? "Sign in to access your documents"
+            : "Start securing your documents today"}
+        </p>
+
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+        >
+
+          {!isLogin && (
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={handleChange}
+            />
           )}
-          <label>
-            Email
-            <input type="email" name="email" value={form.email} onChange={handleChange} required />
-          </label>
-          <label>
-            Password
-            <input type="password" name="password" value={form.password} onChange={handleChange} required />
-          </label>
-          {error ? <p className="error-text">{error}</p> : null}
-          <button type="submit" className="btn btn-primary full" disabled={loading}>
-            {loading ? 'Please wait...' : mode === 'login' ? 'Login' : 'Create Account'}
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+
+          {!isLogin && (
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
+          )}
+
+          {isLogin && (
+            <div className="forgot-password">
+              <button
+                type="button"
+                className="forgot-btn"
+              >
+                Forgot Password?
+              </button>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="btn btn-primary auth-btn"
+          >
+            {isLogin ? "Login" : "Register"}
           </button>
+
         </form>
 
-        <Link className="back-home" to="/">
-          Back to Home
-        </Link>
+        <div className="auth-switch">
+
+          {isLogin
+            ? "Don't have an account?"
+            : "Already have an account?"}
+
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+          >
+            {isLogin ? "Register" : "Login"}
+          </button>
+
+        </div>
+
       </div>
+
     </div>
   );
 }
-
