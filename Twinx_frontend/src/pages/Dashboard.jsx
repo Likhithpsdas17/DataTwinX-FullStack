@@ -15,7 +15,23 @@ import './Dashboard.css';
 
 function Dashboard() {
 const navigate = useNavigate();
-const user = localStorage.getItem('dtx_user') || 'User';
+
+let user = null;
+
+try {
+  const storedUser = localStorage.getItem("dtx_user");
+
+  if (
+    storedUser &&
+    storedUser !== "undefined" &&
+    storedUser !== "null"
+  ) {
+    user = JSON.parse(storedUser);
+  }
+} catch (error) {
+  console.error("Invalid user data in localStorage");
+}
+
 const token = localStorage.getItem('dtx_token');
 
 const [file, setFile] = useState(null);
@@ -137,7 +153,7 @@ return (
         <div className="hero-flex">
           <div className="hero-left">
             <h1>System Integrity Engine</h1>
-            <p>Welcome back, {user}. Ingest documents to monitor, generate and map infrastructure compliance diagnostics.</p>
+            <p>Welcome back, {user?.name || "User"}.. Ingest documents to monitor, generate and map infrastructure compliance diagnostics.</p>
           </div>
           <div className="hero-metrics">
             <div className="hero-metric-pill">
@@ -285,7 +301,6 @@ return (
             )}
           </div>
         </div>
-
       </div>
     </main>
   </div>

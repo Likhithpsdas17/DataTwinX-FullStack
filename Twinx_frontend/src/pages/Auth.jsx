@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginUser, registerUser } from "../services/api";
 
 export default function Auth() {
-
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -11,6 +13,8 @@ export default function Auth() {
     confirmPassword: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -18,18 +22,71 @@ export default function Auth() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+    
+      try {
+        setLoading(true);
+    
+        if (!isLogin) {
+    
+          if (formData.password !== formData.confirmPassword) {
+            alert("Passwords do not match");
+            return;
+          }
+    
+          const result = await registerUser({
+            name: formData.fullName,
+            email: formData.email,
+            password: formData.password,
+          });
 
-    if (isLogin) {
-      console.log("Login Data:", {
-        email: formData.email,
-        password: formData.password,
-      });
-    } else {
-      console.log("Register Data:", formData);
-    }
-  };
+          console.log("REGISTER RESPONSE:", result);
+    
+          localStorage.setItem(
+            "dtx_token",
+            result.data.token
+          );
+          
+          localStorage.setItem(
+            "dtx_user",
+            JSON.stringify(result.data.user)
+          );
+    
+          navigate("/dashboard");
+    
+        } else {
+    
+          const result = await loginUser({
+            email: formData.email,
+            password: formData.password,
+          });
+
+          console.log("LOGIN RESPONSE:", result);
+    
+          localStorage.setItem(
+            "dtx_token",
+            result.data.token
+          );
+          
+          localStorage.setItem(
+            "dtx_user",
+            JSON.stringify(result.data.user)
+          );
+    
+          navigate("/dashboard");
+        }
+    
+      } catch (error) {
+    
+        console.error(error);
+    
+        alert(error.message || "Authentication failed");
+    
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="auth-page">
@@ -91,23 +148,17 @@ export default function Auth() {
             />
           )}
 
-          {isLogin && (
-            <div className="forgot-password">
-              <button
-                type="button"
-                className="forgot-btn"
-              >
-                Forgot Password?
-              </button>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            className="btn btn-primary auth-btn"
-          >
-            {isLogin ? "Login" : "Register"}
-          </button>
+        <button
+          type="submit"
+          className="btn btn-primary auth-btn"
+          disabled={loading}
+        >
+          {loading
+            ? "Please wait..."
+            : isLogin
+              ? "Login"
+              : "Register"}
+        </button>
 
         </form>
 
