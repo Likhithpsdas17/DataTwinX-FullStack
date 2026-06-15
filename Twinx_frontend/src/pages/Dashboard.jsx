@@ -11,299 +11,382 @@ const Icons = {
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { predictTrustScore, uploadDocument, getDashboardOverview } from '../services/api';
+import { Link } from "react-router-dom";
 import './Dashboard.css';
 
 function Dashboard() {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-let user = null;
+  let user = null;
 
-try {
-  const storedUser = localStorage.getItem("dtx_user");
-
-  if (
-    storedUser &&
-    storedUser !== "undefined" &&
-    storedUser !== "null"
-  ) {
-    user = JSON.parse(storedUser);
-  }
-} catch (error) {
-  console.error("Invalid user data in localStorage");
-}
-
-const token = localStorage.getItem('dtx_token');
-
-const [file, setFile] = useState(null);
-const [uploadResult, setUploadResult] = useState(null);
-const [scoreResult, setScoreResult] = useState(null);
-const [message, setMessage] = useState('');
-const [loading, setLoading] = useState(false);
-
-const [overviewData, setOverviewData] = useState(null);
-const [metricsLoading, setMetricsLoading] = useState(true);
-const [metricsError, setMetricsError] = useState(null);
-
-const fileInputRef = useRef(null);
-
-
-const logout = () => {
-  localStorage.removeItem('dtx_token');
-  localStorage.removeItem('dtx_user');
-  navigate('/auth');
-};
-
-const onUpload = async (event) => {
-  event.preventDefault();
-  if (!file) {
-    setMessage('Please choose a document first.');
-    return;
-  }
-  setMessage('');
-  setLoading(true);
   try {
-    const result = await uploadDocument(file, token);
-    setUploadResult(result);
-    setMessage('Document uploaded successfully.');
-  } catch (err) {
-    const fallback = {
-      documentId: `DOC-${Date.now()}`,
-      fileName: file.name,
-      lifecycleState: 'CREATED'
-    };
-    setUploadResult(fallback);
-    setMessage('Demo mode: upload simulated.');
-  } finally {
-    setLoading(false);
-  }
-};
+    const storedUser = localStorage.getItem("dtx_user");
 
-const onCheckScore = async () => {
-  if (!uploadResult?.documentId) {
-    setMessage('Upload a document before checking trust score.');
-    return;
+    if (
+      storedUser &&
+      storedUser !== "undefined" &&
+      storedUser !== "null"
+    ) {
+      user = JSON.parse(storedUser);
+    }
+  } catch (error) {
+    console.error("Invalid user data in localStorage");
   }
-  setLoading(true);
-  setMessage('');
-  try {
-    const score = await predictTrustScore(uploadResult.documentId, token);
-    setScoreResult(score);
-  } catch (err) {
-    const value = Math.floor(72 + Math.random() * 25);
-    setScoreResult({
-      documentId: uploadResult.documentId,
-      trustScore: value,
-      riskLevel: value > 90 ? 'LOW' : value > 80 ? 'MEDIUM' : 'HIGH',
-      model: 'Python Trust Model (demo fallback)'
-    });
-  } finally {
-    setLoading(false);
-  }
-};
 
-useEffect(() => {
-  const fetchMetrics = async () => {
+  const token = localStorage.getItem('dtx_token');
+
+  const [file, setFile] = useState(null);
+  const [uploadResult, setUploadResult] = useState(null);
+  const [scoreResult, setScoreResult] = useState(null);
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const [overviewData, setOverviewData] = useState(null);
+  const [metricsLoading, setMetricsLoading] = useState(true);
+  const [metricsError, setMetricsError] = useState(null);
+
+  const fileInputRef = useRef(null);
+
+
+  const logout = () => {
+    localStorage.removeItem('dtx_token');
+    localStorage.removeItem('dtx_user');
+    navigate('/auth');
+  };
+
+  const onUpload = async (event) => {
+    event.preventDefault();
+    if (!file) {
+      setMessage('Please choose a document first.');
+      return;
+    }
+    setMessage('');
+    setLoading(true);
     try {
-      setMetricsLoading(true);
-      const data = await getDashboardOverview();
-      setOverviewData(data);
-      setMetricsError(null);
+      const result = await uploadDocument(file, token);
+      setUploadResult(result.data);
+      setMessage('Document uploaded successfully.');
     } catch (err) {
-      setMetricsError(err.message || "Could not load analytics data.");
+      const fallback = {
+        documentId: `DOC-${Date.now()}`,
+        fileName: file.name,
+        lifecycleState: 'CREATED'
+      };
+      setUploadResult(fallback);
+      setMessage('Demo mode: upload simulated.');
     } finally {
-      setMetricsLoading(false);
+      setLoading(false);
     }
   };
 
-  fetchMetrics();
-}, []);
+  const onCheckScore = async () => {
+    if (!uploadResult?.document?.id) {
+      setMessage('Upload a document before checking trust score.');
+      return;
+    }
+    setLoading(true);
+    setMessage('');
+    try {
+      const score = await predictTrustScore(uploadResult.document.id, token);
+      setScoreResult(score);
+    } catch (err) {
+      const value = Math.floor(72 + Math.random() * 25);
+      setScoreResult({
+        documentId: uploadResult.documentId,
+        trustScore: value,
+        riskLevel: value > 90 ? 'LOW' : value > 80 ? 'MEDIUM' : 'HIGH',
+        model: 'Python Trust Model (demo fallback)'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-// Compute modern risk classes matches without destroying old values
-const activeTrustScore = scoreResult?.trustScore ?? overviewData?.trustStatistics?.averageTrustScore ?? 0;
-const badgeClass = activeTrustScore >= 90 ? 'badge-success' : activeTrustScore >= 80 ? 'badge-warning' : 'badge-danger';
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        setMetricsLoading(true);
+        const data = await getDashboardOverview();
+        setOverviewData(data);
+        setMetricsError(null);
+      } catch (err) {
+        setMetricsError(err.message || "Could not load analytics data.");
+      } finally {
+        setMetricsLoading(false);
+      }
+    };
 
-return (
-  <div className="dashboard-shell">
-    {/* SaaS Left Navigation Sidebar */}
-    <aside className="sidebar">
-      <div className="sidebar-brand">
-        Data <span>TwinX</span>
-      </div>
-      <nav className="sidebar-nav">
-        <button className="nav-item active"><Icons.Dashboard /> <span>Dashboard</span></button>
-        <button className="nav-item"><Icons.Documents /> <span>Documents</span></button>
-        <button className="nav-item"><Icons.Sharing /> <span>Sharing</span></button>
-        <button className="nav-item"><Icons.Analytics /> <span>Analytics</span></button>
-        <button className="nav-item"><Icons.Settings /> <span>Settings</span></button>
+    fetchMetrics();
+  }, []);
 
-        <button className="nav-item nav-item-logout" onClick={logout}>
-          <Icons.Logout /> <span>Logout</span>
-        </button>
-      </nav>
-    </aside>
+  // Compute modern risk classes matches without destroying old values
+  const activeTrustScore = scoreResult?.trustScore ?? overviewData?.trustStatistics?.averageTrustScore ?? 0;
+  const badgeClass = activeTrustScore >= 90 ? 'badge-success' : activeTrustScore >= 80 ? 'badge-warning' : 'badge-danger';
 
-    {/* Main Workspace Stage */}
-    <main className="main-content">
-      {/* Dynamic Telemetry Alerts */}
-      {metricsLoading && <div className="system-alert loading">Retrieving real-time analytical telemetry matrix...</div>}
-      {metricsError && <div className="system-alert error">Telemetry Matrix Error: {metricsError}</div>}
+  return (
+    <div className="dashboard-shell">
+      {/* SaaS Left Navigation Sidebar */}
+      <aside className="sidebar">
+        <Link to="/" className="sidebar-brand">
+          Data <span>TwinX</span>
+        </Link>
+        <nav className="sidebar-nav">
+          <button className="nav-item active"><Icons.Dashboard /> <span>Dashboard</span></button>
+          <button className="nav-item"><Icons.Documents /> <span>Documents</span></button>
+          <button className="nav-item"><Icons.Sharing /> <span>Sharing</span></button>
+          <button className="nav-item"><Icons.Analytics /> <span>Analytics</span></button>
+          <button className="nav-item"><Icons.Settings /> <span>Settings</span></button>
 
-      {/* Focus Trust Score Hero Section */}
-      <section className="saas-card trust-hero-section">
-        <div className="hero-flex">
-          <div className="hero-left">
-            <h1>System Integrity Engine</h1>
-            <p>Welcome back, {user?.name || "User"}.. Ingest documents to monitor, generate and map infrastructure compliance diagnostics.</p>
-          </div>
-          <div className="hero-metrics">
-            <div className="hero-metric-pill">
-              <div className="label">Network Trust Score</div>
-              <div className="value">{activeTrustScore}%</div>
+          <button className="nav-item nav-item-logout" onClick={logout}>
+            <Icons.Logout /> <span>Logout</span>
+          </button>
+        </nav>
+      </aside>
+
+      {/* Main Workspace Stage */}
+      <main className="main-content">
+        {/* Dynamic Telemetry Alerts */}
+        {metricsLoading && <div className="system-alert loading">Retrieving real-time analytical telemetry matrix...</div>}
+        {metricsError && <div className="system-alert error">Telemetry Matrix Error: {metricsError}</div>}
+
+        {/* Focus Trust Score Hero Section */}
+        <section className="saas-card trust-hero-section">
+          <div className="hero-flex">
+            <div className="hero-left">
+              <h1>Welcome back, {user?.name || "User"} </h1>
+
+              <p>
+                Manage your digital twins, monitor document trust,
+                and track sharing activity from one dashboard.
+              </p>
+
             </div>
-            <div className="hero-metric-pill">
-              <div className="label">Risk Profile Index</div>
-              <div style={{ marginTop: '8px' }} className={`badge ${badgeClass}`}>
-                {scoreResult?.riskLevel || (activeTrustScore >= 90 ? 'LOW' : activeTrustScore >= 80 ? 'MEDIUM' : 'HIGH')}
+            <div className="hero-metrics">
+              <div className="hero-metric-pill">
+                <div className="label">Network Trust Score</div>
+                <div className="value">{activeTrustScore}%</div>
+              </div>
+              <div className="hero-metric-pill">
+                <div className="label">Risk Profile Index</div>
+                <div style={{ marginTop: '8px' }} className={`badge ${badgeClass}`}>
+                  {scoreResult?.riskLevel || (activeTrustScore >= 90 ? 'LOW' : activeTrustScore >= 80 ? 'MEDIUM' : 'HIGH')}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Global Analytics Cards Counter Row */}
-      {!metricsLoading && !metricsError && overviewData && (
-        <section className="analytics-grid">
-          <div className="saas-card analytics-card">
-            <div className="card-header">
-              <span>Total Documents</span>
-              <Icons.Documents />
-            </div>
-            <div className="card-value">{overviewData.userStatistics?.totalDocuments ?? 0}</div>
-          </div>
-          <div className="saas-card analytics-card">
-            <div className="card-header">
-              <span>Total Shares</span>
-              <Icons.Sharing />
-            </div>
-            <div className="card-value">{overviewData.userStatistics?.totalShares ?? 0}</div>
-          </div>
-          <div className="saas-card analytics-card">
-            <div className="card-header">
-              <span>Total Views</span>
-              <Icons.Analytics />
-            </div>
-            <div className="card-value">{overviewData.userStatistics?.totalViews ?? 0}</div>
-          </div>
-          <div className="saas-card analytics-card">
-            <div className="card-header">
-              <span>Total Downloads</span>
-              <Icons.Documents />
-            </div>
-            <div className="card-value">{overviewData.userStatistics?.totalDownloads ?? 0}</div>
           </div>
         </section>
-      )}
 
-      {/* Workplace Execution Columns */}
-      <div className="workplace-grid">
-        
-        {/* Column Left: Ingestion Engine & Twin Meta */}
-        <div className="workplace-column">
-          
-          {/* Upload Section Card */}
-          <div className="saas-card">
-            <h2 className="section-title">Ingest Document Object</h2>
-            <form onSubmit={onUpload}>
-              <div className="upload-dropzone" onClick={() => fileInputRef.current.click()}>
-                <div className="upload-icon"><Icons.Upload /></div>
-                <p style={{ fontWeight: 500 }}>Click to select your document file</p>
-                <p className="file-spec">Supported formats: PDF, DOC, DOCX, TXX, CSV, JSON</p>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  accept=".pdf,.doc,.docx,.txt,.csv,.json"
-                  style={{ display: 'none' }}
-                  onChange={(e) => setFile(e.target.files?.[0] || null)}
-                />
+        {/* Global Analytics Cards Counter Row */}
+        {!metricsLoading && !metricsError && overviewData && (
+          <section className="analytics-grid">
+            <div className="saas-card analytics-card">
+              <div className="card-header">
+                <span>Total Documents</span>
+                <Icons.Documents />
               </div>
+              <div className="card-value">{overviewData.userStatistics?.totalDocuments ?? 0}</div>
+            </div>
+            <div className="saas-card analytics-card">
+              <div className="card-header">
+                <span>Total Shares</span>
+                <Icons.Sharing />
+              </div>
+              <div className="card-value">{overviewData.userStatistics?.totalShares ?? 0}</div>
+            </div>
+            <div className="saas-card analytics-card">
+              <div className="card-header">
+                <span>Total Views</span>
+                <Icons.Analytics />
+              </div>
+              <div className="card-value">{overviewData.userStatistics?.totalViews ?? 0}</div>
+            </div>
+            <div className="saas-card analytics-card">
+              <div className="card-header">
+                <span>Total Downloads</span>
+                <Icons.Documents />
+              </div>
+              <div className="card-value">{overviewData.userStatistics?.totalDownloads ?? 0}</div>
+            </div>
+          </section>
+        )}
 
-              {file && (
-                <div className="selected-file-banner">
-                  <span style={{ fontWeight: 500, wordBreak: 'break-all' }}>{file.name}</span>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Ready to Process</span>
-                </div>
-              )}
+        {/* Workplace Execution Columns */}
+        <div className="workplace-grid">
 
-              <button className="btn-primary" disabled={loading}>
-                {loading ? 'Uploading...' : 'Execute Twin Mapping'}
-              </button>
-            </form>
-            {message && <p className="system-alert loading" style={{ marginTop: '16px', marginBottom: '0' }}>{message}</p>}
-          </div>
+          {/* Column Left: Ingestion Engine & Twin Meta */}
+          <div className="workplace-column">
 
-          {/* Document Twin Info Panel */}
-          <div className="saas-card">
-            <h2 className="section-title">Active Twin Registry Metadata</h2>
-            {uploadResult ? (
-              <div className="info-list">
-                <div className="info-row">
-                  <span className="info-label">Document ID</span>
-                  <span className="info-value" style={{ fontFamily: 'monospace' }}>{uploadResult.documentId}</span>
+            {/* Upload Section Card */}
+            <div className="saas-card">
+              <h2>Upload Document</h2>
+              <form onSubmit={onUpload}>
+                <div className="upload-dropzone" onClick={() => fileInputRef.current.click()}>
+                  <div className="upload-icon"><Icons.Upload /></div>
+                  <p style={{ fontWeight: 500 }}>Click to select your document file</p>
+                  <p className="file-spec">Supported formats: PDF, DOC, DOCX, TXX, CSV, JSON</p>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".pdf,.doc,.docx,.txt,.csv,.json"
+                    style={{ display: 'none' }}
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  />
                 </div>
-                <div className="info-row">
-                  <span className="info-label">File Name</span>
-                  <span className="info-value">{uploadResult.fileName}</span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Lifecycle State</span>
-                  <span className="info-value">
-                    <span className="badge badge-success">{uploadResult.lifecycleState || 'CREATED'}</span>
-                  </span>
-                </div>
-                <button className="btn-primary" style={{ marginTop: '8px' }} onClick={onCheckScore} disabled={loading}>
-                  Check Trust Score
+
+                {file && (
+                  <div className="selected-file-banner">
+                    <span style={{ fontWeight: 500, wordBreak: 'break-all' }}>{file.name}</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Ready to Process</span>
+                  </div>
+                )}
+
+                <button className="btn-primary" disabled={loading}>
+                  {loading ? 'Uploading...' : 'Create Digital Twin'}
                 </button>
-              </div>
-            ) : (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Upload a document to create a digital twin entry.</p>
-            )}
-          </div>
+              </form>
+              {message && <p className="system-alert loading" style={{ marginTop: '16px', marginBottom: '0' }}>{message}</p>}
+            </div>
 
-        </div>
-
-        {/* Column Right: Trust Assessment Diagnostics */}
-        <div className="workplace-column">
-          <div className="saas-card">
-            <h2 className="section-title">Trust Score Diagnostics</h2>
-            {scoreResult ? (
-              <div className="info-list">
-                <div className="info-row">
-                  <span className="info-label">Verdict Score</span>
-                  <span className="info-value" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)' }}>
-                    {scoreResult.trustScore ?? '--'}%
-                  </span>
-                </div>
-                <div className="info-row">
-                  <span className="info-label">Threat Classification</span>
-                  <span className="info-value">
-                    <span className={`badge ${scoreResult.riskLevel === 'LOW' ? 'badge-success' : scoreResult.riskLevel === 'MEDIUM' ? 'badge-warning' : 'badge-danger'}`}>
-                      {scoreResult.riskLevel || 'N/A'}
+            {/* Document Twin Info Panel */}
+            <div className="saas-card">
+              <h2 className="section-title">Document Information</h2>
+              {uploadResult ? (
+                <div className="info-list">
+                  <div className="info-row">
+                    <span className="info-label">Document ID</span>
+                    <span className="info-value" style={{ fontFamily: 'monospace' }}>{uploadResult.document.id}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">File Name</span>
+                    <span className="info-value">{uploadResult.document?.originalName}</span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Lifecycle State</span>
+                    <span className="info-value">
+                      <span className="badge badge-success"> CREATED </span>
                     </span>
-                  </span>
+                  </div>
+
+                  <div className="info-row">
+                    <span className="info-label">Twin ID</span>
+
+                    <span className="info-value">
+                      {uploadResult.digitalTwin?.twinId}
+                    </span>
+                  </div>
+                  <button className="btn-primary" style={{ marginTop: '8px' }} onClick={onCheckScore} disabled={loading}>
+                    Check Trust Score
+                  </button>
                 </div>
-                <div className="info-row">
-                  <span className="info-label">Model Signature</span>
-                  <span className="info-value" style={{ color: 'var(--text-muted)' }}>{scoreResult.model || 'Python trust predictor'}</span>
+              ) : (
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Upload a document to create a digital twin entry.</p>
+              )}
+            </div>
+
+          </div>
+
+          {/* Column Right: Trust Assessment Diagnostics */}
+          <div className="workplace-column">
+            <div className="saas-card">
+              <h2 className="section-title">Trust Analysis</h2>
+              {scoreResult ? (
+                <div className="info-list">
+                  <div className="info-row">
+                    <span className="info-label">Verdict Score</span>
+                    <span className="info-value" style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)' }}>
+                      {scoreResult.trustScore ?? '--'}%
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Threat Classification</span>
+                    <span className="info-value">
+                      <span className={`badge ${scoreResult.riskLevel === 'LOW' ? 'badge-success' : scoreResult.riskLevel === 'MEDIUM' ? 'badge-warning' : 'badge-danger'}`}>
+                        {scoreResult.riskLevel || 'N/A'}
+                      </span>
+                    </span>
+                  </div>
+                  <div className="info-row">
+                    <span className="info-label">Model Signature</span>
+                    <span className="info-value" style={{ color: 'var(--text-muted)' }}>{scoreResult.model || 'Python trust predictor'}</span>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Click "Check Trust Score" after uploading a document.</p>
-            )}
+              ) : (
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Click "Check Trust Score" after uploading a document.</p>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </main>
-  </div>
-);
+
+        {/* Recent Documents */}
+        <section className="saas-card recent-documents">
+          <h2 className="section-title">Recent Documents</h2>
+
+          <div className="documents-table">
+            <div className="table-header">
+              <span>File Name</span>
+              <span>Twin ID</span>
+              <span>Trust Score</span>
+              <span>Status</span>
+            </div>
+
+            <div className="table-row">
+              <span>passport.pdf</span>
+              <span>DTX-1001</span>
+              <span className="trust-high">92%</span>
+              <span className="badge badge-success">Active</span>
+            </div>
+
+            <div className="table-row">
+              <span>resume.pdf</span>
+              <span>DTX-1002</span>
+              <span className="trust-medium">84%</span>
+              <span className="badge badge-warning">Shared</span>
+            </div>
+
+            <div className="table-row">
+              <span>certificate.pdf</span>
+              <span>DTX-1003</span>
+              <span className="trust-high">95%</span>
+              <span className="badge badge-success">Verified</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Activity Timeline */}
+        <section className="saas-card activity-timeline">
+          <h2 className="section-title">Recent Activity</h2>
+
+          <div className="timeline">
+
+            <div className="timeline-item">
+              <div className="timeline-dot"></div>
+              <div>
+                <strong>Document Uploaded</strong>
+                <p>passport.pdf uploaded successfully</p>
+              </div>
+            </div>
+
+            <div className="timeline-item">
+              <div className="timeline-dot"></div>
+              <div>
+                <strong>Digital Twin Created</strong>
+                <p>Twin ID generated successfully</p>
+              </div>
+            </div>
+
+            <div className="timeline-item">
+              <div className="timeline-dot"></div>
+              <div>
+                <strong>Trust Score Generated</strong>
+                <p>Risk profile analyzed</p>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+    </div>
+  );
 }
 export default Dashboard;

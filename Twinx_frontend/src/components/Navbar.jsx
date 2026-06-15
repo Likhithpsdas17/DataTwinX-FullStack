@@ -29,7 +29,7 @@ export default function Navbar() {
         {token ? (
           <>
             <Link to="/dashboard" className="dashboard-btn">
-              Dashboard
+              Dashboard →
             </Link>
 
             <button onClick={logout} className="logout-btn">
