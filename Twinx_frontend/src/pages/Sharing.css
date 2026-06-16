@@ -1,0 +1,124 @@
+.sharing-header {
+    margin-bottom: 2rem;
+  }
+  
+  .sharing-header h1 {
+    font-size: 2rem;
+    margin-bottom: .5rem;
+  }
+  
+  .sharing-header p {
+    color: var(--text-muted);
+  }
+  
+  .sharing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  
+  .saas-card select,
+  .saas-card input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.04);
+    color: white;
+  }
+
+  .saas-card select {
+    background: #162a59;
+    color: white;
+  }
+  
+  .saas-card select option {
+    background: #162a59;
+    color: white;
+  }
+  
+  .saas-card label {
+    display: block;
+    margin-top: 1rem;
+  }
+  
+  .share-link-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    word-break: break-all;
+    background: rgba(255,255,255,.05);
+  }
+
+  .btn-danger {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .btn-danger:hover {
+    opacity: 0.9;
+  }
+  
+  @media (max-width: 768px) {
+    .sharing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .shared-document-page {
+    min-height: 100vh;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .shared-document-card {
+    width: 100%;
+    max-width: 900px;
+    overflow: hidden;
+  }
+  
+  .shared-document-card table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  .shared-document-card td {
+    word-break: break-word;
+  }
+
+  @media (max-width: 768px) {
+
+    .shared-document-page {
+      padding: 16px;
+    }
+  
+    .shared-document-card {
+      padding: 20px;
+    }
+  
+    .shared-document-card h1 {
+      font-size: 2rem;
+    }
+  
+    .detail-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  
+    .detail-row span:last-child {
+      text-align: left;
+      word-break: break-word;
+    }
+  
+    .download-btn {
+      width: 100%;
+    }
+  }

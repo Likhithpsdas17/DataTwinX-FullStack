@@ -1,0 +1,40 @@
+.public-share-page {
+    min-height: 100vh;
+    background: #041631;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+  }
+  
+  .share-card {
+    width: 100%;
+    max-width: 700px;
+    background: #162a59;
+    border-radius: 20px;
+    padding: 40px;
+    color: white;
+  }
+  
+  .share-card h1 {
+    margin-bottom: 30px;
+  }
+  
+  .share-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .download-btn {
+    margin-top: 30px;
+    display: block;
+    text-align: center;
+    padding: 14px;
+    background: #25a9f0;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+  }

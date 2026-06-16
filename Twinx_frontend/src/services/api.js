@@ -47,7 +47,7 @@ export async function predictTrustScore(documentId, token) {
     throw new Error('Could not fetch trust score');
   }
   return response.json();
-}
+};
 
 export const getDashboardOverview = async () => {
   const token = localStorage.getItem('dtx_token');
@@ -72,3 +72,95 @@ export const getDashboardOverview = async () => {
 
   return result.data;
 };
+
+export const getDocuments = async () => {
+  const token = localStorage.getItem("dtx_token");
+
+  const response = await fetch(
+    `${BASE_URL}/documents`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  const result = await response.json();
+
+  return result.data;
+};
+
+export async function createShareLink(
+  documentId,
+  payload
+) {
+  const token = localStorage.getItem(
+    "dtx_token"
+  );
+
+  const response = await fetch(
+    `${BASE_URL}/share/${documentId}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to create share link"
+    );
+  }
+
+  return response.json();
+}
+
+export const getSharedDocument = async (token) => {
+  const response = await fetch(
+    `http://localhost:8080/public/share/${token}`
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Failed to load shared document"
+    );
+  }
+
+  return result.data;
+};
+
+export const getDownloadUrl = (token) => {
+  return `http://localhost:8080/public/share/${token}/download`;
+};
+
+export async function revokeShareLink(
+  shareLinkId
+) {
+  const token =
+    localStorage.getItem("dtx_token");
+
+  const response = await fetch(
+    `${BASE_URL}/share/${shareLinkId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "Failed to revoke share link"
+    );
+  }
+
+  return response.json();
+}

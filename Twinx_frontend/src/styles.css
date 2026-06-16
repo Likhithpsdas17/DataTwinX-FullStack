@@ -964,6 +964,20 @@ a {
   margin: 0.2rem 0 0.6rem;
 }
 
+.mobile-topbar {
+  display: none;
+}
+
+.menu-btn {
+  border: none;
+  background: #1c3366;
+  color: white;
+  font-size: 24px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
 /* Responsiveness */
 
 /* ---------- Large Tablets ---------- */
@@ -1153,6 +1167,19 @@ a {
     flex-wrap: wrap;
   }
 }
+
+/* Dashboard Mobile  */
+
+.mobile-topbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-topbar {
+    display: flex;
+  }
+}
+
 
 /* ---------- Small Phones ---------- */
 

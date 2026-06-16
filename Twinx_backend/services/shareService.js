@@ -186,8 +186,7 @@ const createShareLink = async (ownerId, documentId, options = {}, reqMeta = {}) 
     ...getReqMeta(reqMeta),
   });
 
-  const baseUrl = getBaseUrl();
-  const shareUrl = `${baseUrl}/public/share/${token}`;
+  const shareUrl = `http://localhost:5173/share/${token}`;
 
   return {
     shareUrl,
