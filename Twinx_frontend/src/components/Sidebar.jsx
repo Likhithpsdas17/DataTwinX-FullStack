@@ -23,11 +23,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
         <Link
           to="/dashboard"
-          className={`nav-item ${
-            location.pathname === "/dashboard"
+          className={`nav-item ${location.pathname === "/dashboard"
               ? "active"
               : ""
-          }`}
+            }`}
           onClick={() => setMobileOpen(false)}
         >
           <Icons.Dashboard />
@@ -36,11 +35,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
         <Link
           to="/documents"
-          className={`nav-item ${
-            location.pathname === "/documents"
+          className={`nav-item ${location.pathname === "/documents"
               ? "active"
               : ""
-          }`}
+            }`}
           onClick={() => setMobileOpen(false)}
         >
           <Icons.Documents />
@@ -49,11 +47,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
         <Link
           to="/sharing"
-          className={`nav-item ${
-            location.pathname === "/sharing"
+          className={`nav-item ${location.pathname === "/sharing"
               ? "active"
               : ""
-          }`}
+            }`}
           onClick={() => setMobileOpen(false)}
         >
           <Icons.Sharing />
@@ -62,21 +59,27 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
         <Link
           to="/analytics"
-          className={`nav-item ${
-            location.pathname === "/analytics"
+          className={`nav-item ${location.pathname === "/analytics"
               ? "active"
               : ""
-          }`}
+            }`}
           onClick={() => setMobileOpen(false)}
         >
           <Icons.Analytics />
           <span>Analytics</span>
         </Link>
 
-        <button className="nav-item">
+        <Link
+          to="/settings"
+          className={`nav-item ${location.pathname === "/settings"
+              ? "active"
+              : ""
+            }`}
+          onClick={() => setMobileOpen(false)}
+        >
           <Icons.Settings />
           <span>Settings</span>
-        </button>
+        </Link>
 
         <button
           className="nav-item nav-item-logout"

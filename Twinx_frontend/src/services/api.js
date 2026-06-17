@@ -164,3 +164,33 @@ export async function revokeShareLink(
 
   return response.json();
 }
+
+export const getTwinTrust = async (twinId) => {
+  const token = localStorage.getItem("dtx_token");
+
+  const response = await fetch(
+    `${BASE_URL}/twins/${twinId}/trust`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const result = await response.json();
+  return result.data;
+};
+
+export const getTwinTimeline = async (twinId) => {
+  const token = localStorage.getItem("dtx_token");
+
+  const response = await fetch(
+    `${BASE_URL}/twins/${twinId}/timeline`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const result = await response.json();
+  return result.data;
+};

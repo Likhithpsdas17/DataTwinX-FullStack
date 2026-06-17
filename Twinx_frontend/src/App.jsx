@@ -6,6 +6,8 @@ import Documents from "./pages/Documents";
 import Sharing from "./pages/Sharing";
 import PublicShare from "./pages/PublicShare";
 import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
+import TwinDetails from "./pages/TwinDetails";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('dtx_token');
@@ -51,6 +53,16 @@ export default function App() {
       <Route
         path="/analytics"
         element={<Analytics />}
+      />
+
+      <Route
+        path="/settings"
+        element={<Settings />}
+      />
+
+      <Route
+        path="/twins/:twinId"
+        element={<TwinDetails />}
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />
