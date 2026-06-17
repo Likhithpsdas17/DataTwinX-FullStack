@@ -3,6 +3,9 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function Home() {
+
+  const token = localStorage.getItem("dtx_token");
+
   return (
     <div className="page">
       <header className="hero">
@@ -25,13 +28,13 @@ export default function Home() {
             </p>
 
             <div className="hero-actions">
-              <Link className="btn btn-primary" to="/auth">
+              <Link
+                className="btn btn-primary"
+                to={token ? "/dashboard" : "/auth"}
+              >
                 Get Started
               </Link>
 
-              <button className="btn btn-secondary">
-                Watch Demo
-              </button>
             </div>
           </div>
 
@@ -41,7 +44,10 @@ export default function Home() {
 
               <div className="preview-top">
                 <span>Data TwinX Dashboard</span>
-                <div className="online-dot"></div>
+
+                <div className="preview-label">
+                  Demo Data
+                </div>
               </div>
 
               <div className="preview-score-card">
@@ -83,7 +89,7 @@ export default function Home() {
       <main>
 
         {/* HOW IT WORKS */}
-        <section className="workflow-section">
+        <section id="how-it-works" className="workflow-section">
 
           <div className="section-header">
             <h2>How Data TwinX Works</h2>
@@ -141,10 +147,10 @@ export default function Home() {
             </div>
 
           </div>
-          </section>
+        </section>
 
         {/* PRODUCT PREVIEW */}
-        <section className="dashboard-section">
+        <section id="features" className="dashboard-section">
 
           <div className="dashboard-content">
 
@@ -154,7 +160,7 @@ export default function Home() {
               </span>
 
               <h2>
-                Monitor Everything 
+                Monitor Everything
                 <br />
                 From One Dashboard
               </h2>
@@ -172,9 +178,12 @@ export default function Home() {
                 <div>✓ Link Expiration Controls</div>
               </div>
 
-              <button className="dashboard-btn">
-                Explore Dashboard
-              </button>
+              <div className="dashboard-cta">
+                <Link
+                  className="dashboard-btn">
+                  Learn More
+                </Link>
+              </div>
             </div>
 
             <div className="dashboard-right">
@@ -182,7 +191,7 @@ export default function Home() {
               <div className="dashboard-preview-large">
 
                 <div className="preview-header">
-                  <h4>Dashboard Overview</h4>
+                  <h4>Demo Dashboard Preview</h4>
                   <span className="online-dot"></span>
                 </div>
 

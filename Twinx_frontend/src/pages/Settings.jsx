@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { getDashboardOverview } from "../services/api";
+import { useNavigate } from "react-router-dom";
 import "./Settings.css";
 
 export default function Settings() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [stats, setStats] = useState(null);
+    const navigate = useNavigate();
+
+    const logout = () => {
+        localStorage.removeItem("dtx_token");
+        localStorage.removeItem("dtx_user");
+        navigate("/auth");
+    };
 
     const user =
         JSON.parse(localStorage.getItem("dtx_user")) || {};
@@ -123,6 +131,26 @@ export default function Settings() {
                                 </div>
                             </>
                         )}
+                    </div>
+
+                    <div className="saas-card quick-actions-card">
+                        <h2>Quick Actions</h2>
+
+                        <div className="quick-actions">
+                            <button
+                                className="action-btn"
+                                onClick={() => alert("Coming Soon")}
+                            >
+                                🔒 Change Password
+                            </button>
+
+                            <button
+                                className="action-btn logout-action"
+                                onClick={logout}
+                            >
+                                🚪 Logout
+                            </button>
+                        </div>
                     </div>
 
                 </div>

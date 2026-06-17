@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import logo from "../assets/Data-Twinx-logo.jpeg";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -13,15 +14,33 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       {/* Logo */}
-      <Link to="/" className="brand">
-        Data TwinX
-      </Link>
+      <div className="navbar-logo">
+        <img
+          src={logo}
+          alt="Data TwinX"
+          className="brand-logo"
+        />
+
+        <div className="logo-text">
+          <h2>
+            Data <span className="brand-highlight">TwinX</span>
+          </h2>
+
+          <p>Trust • Track • Protect</p>
+        </div>
+      </div>
 
       {/* Center Navigation */}
       <div className="nav-pill">
         <a href="#features">Features</a>
-        <a href="#workflow">How It Works</a>
-        <a href="#insights">Insights</a>
+
+        <a href="#how-it-works">
+          How It Works
+        </a>
+
+        <a href="#insights">
+          Learn More
+        </a>
       </div>
 
       {/* Right Side */}

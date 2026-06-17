@@ -31,6 +31,66 @@
     color: white;
 }
 
+.quick-actions-card {
+    margin-top: 24px;
+  }
+  
+  .quick-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  
+  .action-btn {
+    border: none;
+    cursor: pointer;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+  
+    background: linear-gradient(
+      135deg,
+      #27b6ff,
+      #1e88ff
+    );
+  
+    color: white;
+  
+    transition: all 0.3s ease;
+  }
+  
+  .action-btn:hover {
+    transform: translateY(-2px);
+  
+    box-shadow:
+      0 8px 20px rgba(
+        39,
+        182,
+        255,
+        0.35
+      );
+  }
+  
+  .logout-action {
+    background: linear-gradient(
+      135deg,
+      #ef4444,
+      #dc2626
+    );
+  }
+  
+  .logout-action:hover {
+    box-shadow:
+      0 8px 20px rgba(
+        239,
+        68,
+        68,
+        0.35
+      );
+  }
+
 @media(max-width:768px) {
 
     .settings-grid {
