@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 async function postFormData(url, formData, token) {
   const response = await fetch(url, {
@@ -120,9 +120,13 @@ export async function createShareLink(
   return response.json();
 }
 
+const PUBLIC_URL =
+  import.meta.env.VITE_PUBLIC_URL ||
+  "http://localhost:8080";
+
 export const getSharedDocument = async (token) => {
   const response = await fetch(
-    `http://localhost:8080/public/share/${token}`
+    `${PUBLIC_URL}/public/share/${token}`
   );
 
   const result = await response.json();
@@ -137,7 +141,7 @@ export const getSharedDocument = async (token) => {
 };
 
 export const getDownloadUrl = (token) => {
-  return `http://localhost:8080/public/share/${token}/download`;
+  return `${PUBLIC_URL}/public/share/${token}/download`;
 };
 
 export async function revokeShareLink(
