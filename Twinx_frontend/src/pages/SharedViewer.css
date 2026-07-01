@@ -1,0 +1,263 @@
+/* ==========================================================================
+   DATA TWINX - SHARED VIEWER
+   ========================================================================== */
+
+   .viewer-page {
+    width: 100%;
+    min-height: 100vh;
+    padding: var(--space-xl);
+  }
+  
+  .viewer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+  
+  .viewer-header h1 {
+    margin: 0;
+    color: var(--text);
+  }
+  
+  .viewer-header p {
+    margin-top: var(--space-xs);
+    color: var(--muted);
+  }
+  
+  /* ==========================================================================
+     MAIN GRID
+     ========================================================================== */
+  
+  .viewer-layout {
+    display: grid;
+    grid-template-columns: 2fr 380px;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+  
+  .viewer-main {
+    width: 100%;
+  }
+  
+  .viewer-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+  
+  /* ==========================================================================
+     PDF PLACEHOLDER
+     ========================================================================== */
+  
+  .viewer-placeholder {
+    min-height: 650px;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  
+    text-align: center;
+  
+    border: 2px dashed rgba(255,255,255,.12);
+  
+    border-radius: var(--radius-lg);
+  
+    padding: var(--space-2xl);
+  
+    background: rgba(255,255,255,.02);
+  }
+  
+  .viewer-placeholder h3 {
+    margin-bottom: var(--space-sm);
+  }
+  
+  .viewer-placeholder p {
+    color: var(--muted);
+    max-width: 420px;
+    line-height: 1.7;
+  }
+  
+  /* ==========================================================================
+     INFORMATION CARDS
+     ========================================================================== */
+  
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+    gap: var(--space-md);
+  
+    padding: var(--space-md) 0;
+  
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  
+  .info-row:last-child {
+    border-bottom: none;
+  }
+  
+  .info-row span {
+    color: var(--muted);
+  }
+  
+  .info-row strong {
+    color: var(--text);
+    text-align: right;
+    word-break: break-word;
+  }
+  
+  /* ==========================================================================
+     TRUST STATUS
+     ========================================================================== */
+  
+  .trust-score {
+    margin-top: var(--space-lg);
+  
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  
+    padding: 10px 18px;
+  
+    border-radius: var(--radius-lg);
+  
+    background: rgba(20,184,166,.12);
+  
+    color: var(--success);
+  
+    font-weight: 600;
+  }
+  
+  /* ==========================================================================
+     LOADING
+     ========================================================================== */
+  
+  .viewer-loading,
+  .viewer-error {
+    min-height: 80vh;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  
+    text-align: center;
+  }
+  
+  .viewer-loading h2,
+  .viewer-error h2 {
+    margin-top: var(--space-lg);
+  }
+  
+  .viewer-loading p,
+  .viewer-error p {
+    color: var(--muted);
+    margin-top: var(--space-sm);
+  }
+  
+  /* ==========================================================================
+     LOADER
+     ========================================================================== */
+  
+  .loading-spinner {
+    width: 54px;
+    height: 54px;
+  
+    border-radius: 50%;
+  
+    border: 4px solid rgba(255,255,255,.12);
+  
+    border-top: 4px solid var(--primary);
+  
+    animation: viewer-spin 1s linear infinite;
+  }
+  
+  @keyframes viewer-spin {
+  
+    from {
+      transform: rotate(0deg);
+    }
+  
+    to {
+      transform: rotate(360deg);
+    }
+  
+  }
+  
+  /* ==========================================================================
+     TABLET
+     ========================================================================== */
+  
+  @media (max-width: 1024px) {
+  
+    .viewer-layout {
+  
+      grid-template-columns: 1fr;
+  
+    }
+  
+    .viewer-sidebar {
+  
+      width: 100%;
+  
+    }
+  
+    .viewer-placeholder {
+  
+      min-height: 500px;
+  
+    }
+  
+  }
+  
+  /* ==========================================================================
+     MOBILE
+     ========================================================================== */
+  
+  @media (max-width: 768px) {
+  
+    .viewer-page {
+  
+      padding: var(--space-md);
+  
+    }
+  
+    .viewer-header {
+  
+      flex-direction: column;
+      align-items: flex-start;
+  
+    }
+  
+    .viewer-header button {
+  
+      width: 100%;
+  
+    }
+  
+    .viewer-placeholder {
+  
+      min-height: 380px;
+  
+      padding: var(--space-lg);
+  
+    }
+  
+    .info-row {
+  
+      flex-direction: column;
+      align-items: flex-start;
+  
+    }
+  
+    .info-row strong {
+  
+      text-align: left;
+  
+    }
+  
+  }

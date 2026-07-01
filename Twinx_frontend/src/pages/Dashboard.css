@@ -66,20 +66,41 @@ body {
 .dashboard-shell {
   display: flex;
   min-height: 100vh;
+  background: var(--bg);
+  overflow-x: hidden;
 }
 
 /* Left Sidebar */
+/* ==========================================================================
+   Enterprise Sidebar Layout
+   ========================================================================== */
+
 .sidebar {
-  width: 260px;
-  transition: 0.3s;
-  background-color: var(--bg-sidebar);
-  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  width: var(--sidebar-current-width);
+  height: 100vh;
+
   display: flex;
   flex-direction: column;
+
   padding: 24px 16px;
-  position: fixed;
-  height: 100vh;
-  z-index: 100;
+
+  background: var(--surface);
+
+  border-right: 1px solid rgba(255, 255, 255, .08);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  z-index: var(--z-sidebar);
+
+  transition:
+    width var(--transition-normal),
+    transform var(--transition-normal);
 }
 
 .sidebar-brand {
@@ -153,10 +174,89 @@ body {
 /* Main Main Stage */
 .main-content {
   flex: 1;
-  margin-left: 260px;
-  padding: 40px;
-  max-width: 1400px;
-  width: calc(100% - 260px);
+
+  margin-left: var(--sidebar-current-width);
+
+  width: calc(100% - var(--sidebar-current-width));
+
+  min-height: 100vh;
+
+  padding: var(--space-xl);
+
+  overflow-x: hidden;
+
+  transition:
+    margin-left var(--transition-normal),
+    width var(--transition-normal);
+}
+
+.page-container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Mobile Navigation Foundation
+   ========================================================================== */
+
+.mobile-header {
+  display: none;
+
+  align-items: center;
+  justify-content: space-between;
+
+  height: var(--header-height);
+
+  padding: 0 var(--space-md);
+
+  background: var(--surface);
+
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: var(--z-navbar);
+}
+
+.sidebar-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0, 0, 0, .45);
+
+  backdrop-filter: blur(3px);
+
+  z-index: 90;
+}
+
+.mobile-menu-btn {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+
+  background: transparent;
+
+  color: var(--text);
+
+  cursor: pointer;
+}
+
+.mobile-title {
+  font-size: 1rem;
+
+  font-weight: 700;
+
+  color: var(--text);
 }
 
 /* Reusable SaaS Card */
@@ -505,14 +605,33 @@ h2.section-title {
 }
 
 /* Responsive Media Queries */
-@media (max-width: 1024px) {
-  .workplace-grid {
-    grid-template-columns: 1fr;
+/* ==========================================================================
+   ENTERPRISE RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+
+  :root {
+    --sidebar-current-width: var(--sidebar-width-expanded);
   }
 
-  .sidebar {
-    width: 80px;
-    padding: 24px 8px;
+}
+
+/* Laptop */
+@media (max-width: 1199px) {
+
+  :root {
+    --sidebar-current-width: var(--sidebar-width-expanded);
+  }
+
+}
+
+/* Tablet */
+@media (max-width: 991px) {
+
+  :root {
+    --sidebar-current-width: var(--sidebar-width-collapsed);
   }
 
   .sidebar-brand span,
@@ -520,69 +639,51 @@ h2.section-title {
     display: none;
   }
 
-  .main-content {
-    margin-left: 80px;
-    width: calc(100% - 80px);
-    padding: 24px;
+  .nav-item {
+    justify-content: center;
+    padding: 14px 0;
   }
+
+  .main-content {
+    padding: var(--space-lg);
+  }
+
+  .workplace-grid {
+    grid-template-columns: 1fr;
+  }
+
 }
 
-@media (max-width: 768px) {
-  .dashboard-shell {
-    flex-direction: column;
+/* Mobile */
+@media (max-width: 767px) {
+
+  :root {
+    --sidebar-current-width: 0px;
+  }
+
+  .mobile-header {
+    display: flex;
   }
 
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding: 16px;
+    width: 260px;
+    transform: translateX(-100%);
   }
 
-  .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .nav-item-logout {
-    margin-top: 0;
-    border-top: none;
-    padding-top: 0;
+  .sidebar.mobile-open {
+    transform: translateX(0);
   }
 
   .main-content {
     margin-left: 0;
     width: 100%;
-    padding: 16px;
+    padding: 0;
   }
 
   .hero-flex {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
-  }
-}
-
-
-@media (max-width: 768px) {
-
-  .sidebar {
-    position: fixed;
-    left: -260px;
-    top: 0;
-    height: 100vh;
-    z-index: 999;
-  }
-
-  .sidebar.mobile-open {
-    left: 0;
-  }
-
-  .main-content {
-    margin-left: 0;
-    width: 100%;
   }
 
 }

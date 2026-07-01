@@ -1,9 +1,8 @@
 const getBaseUrl = () => {
-  if (process.env.APP_URL) {
-    return process.env.APP_URL.replace(/\/$/, "");
-  }
-  const port = process.env.PORT || 8080;
-  return `http://localhost:${port}`;
+  return (
+    process.env.BACKEND_URL?.replace(/\/$/, "") ||
+    `http://localhost:${process.env.PORT || 8080}`
+  );
 };
 
 module.exports = getBaseUrl;

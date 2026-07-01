@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Icons } from "../components/Icons";
 import { predictTrustScore, uploadDocument, getDashboardOverview, getDocuments } from '../services/api';
 import Sidebar from "../components/Sidebar";
+import AppLayout from "../components/AppLayout";
 import './Dashboard.css';
 
 
@@ -108,12 +109,8 @@ function Dashboard() {
   const badgeClass = activeTrustScore >= 90 ? 'badge-success' : activeTrustScore >= 80 ? 'badge-warning' : 'badge-danger';
 
   return (
-    <div className="dashboard-shell">
 
-      <Sidebar />
-
-      {/* Main Workspace Stage */}
-      <main className="main-content">
+      <AppLayout>
         {/* Dynamic Telemetry Alerts */}
         {metricsLoading && <div className="system-alert loading">Retrieving real-time analytical telemetry matrix...</div>}
         {metricsError && <div className="system-alert error">Telemetry Matrix Error: {metricsError}</div>}
@@ -342,8 +339,7 @@ function Dashboard() {
           </div>
         </section>
 
-      </main>
-    </div>
+        </AppLayout>
   );
 }
 export default Dashboard;

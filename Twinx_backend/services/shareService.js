@@ -241,14 +241,22 @@ const accessShare = async (token, reqMeta = {}) => {
       mimeType: document.mimeType,
       fileSize: document.fileSize,
     },
+
     share: {
-      allowDownload: shareLink.restrictions.allowDownload,
-      expiresAt: shareLink.restrictions.expiresAt,
-      maxViews: shareLink.restrictions.maxViews,
+      allowDownload:
+        shareLink.restrictions.allowDownload,
+      expiresAt:
+        shareLink.restrictions.expiresAt,
+      maxViews:
+        shareLink.restrictions.maxViews,
       viewsRemaining,
-      oneTimeAccess: shareLink.restrictions.oneTimeView,
-      viewCount: shareLink.usage.viewCount,
+      oneTimeAccess:
+        shareLink.restrictions.oneTimeView,
+      viewCount:
+        shareLink.usage.viewCount,
     },
+    previewUrl:
+      `${getBaseUrl()}/public/share/${token}/preview`
   };
 };
 
@@ -307,6 +315,62 @@ const downloadShare = async (token, reqMeta = {}) => {
   };
 };
 
+const previewShare = async (token, reqMeta = {}) => {
+
+  const shareLink = await validateShareLink(
+    token,
+    reqMeta
+  );
+
+  const document = shareLink.document;
+
+  if (!fs.existsSync(document.filePath)) {
+    throw new ApiError(
+      404,
+      "File not found on server"
+    );
+  }
+
+  // Count preview as a view
+  shareLink.usage.viewCount += 1;
+  shareLink.usage.hasBeenViewed = true;
+
+  await shareLink.save();
+
+  await DigitalTwin.findByIdAndUpdate(
+    shareLink.twin,
+    {
+      $inc: {
+        "analytics.totalViews": 1,
+      },
+    }
+  );
+
+  await lifecycleService.logActivity({
+    documentId: document._id,
+    twinId: shareLink.twin,
+    ownerId: shareLink.owner,
+
+    event: LIFECYCLE_EVENTS.VIEW,
+
+    actor: "recipient",
+
+    metadata: {
+      shareLinkId: shareLink._id,
+      token: shareLink.token,
+      preview: true,
+    },
+
+    ...getReqMeta(reqMeta),
+  });
+
+  return {
+    filePath: document.filePath,
+    mimeType: document.mimeType,
+    originalName: document.originalName,
+  };
+};
+
 const revokeShareLink = async (ownerId, shareLinkId, reqMeta = {}) => {
   const shareLink = await ShareLink.findOne({
     _id: shareLinkId,
@@ -345,6 +409,7 @@ const revokeShareLink = async (ownerId, shareLinkId, reqMeta = {}) => {
 module.exports = {
   createShareLink,
   accessShare,
+  previewShare,
   downloadShare,
   revokeShareLink,
 };

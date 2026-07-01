@@ -4,10 +4,10 @@ import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Documents from "./pages/Documents";
 import Sharing from "./pages/Sharing";
-import PublicShare from "./pages/PublicShare";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import TwinDetails from "./pages/TwinDetails";
+import SharedViewer from "./pages/SharedViewer";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem('dtx_token');
@@ -46,11 +46,6 @@ export default function App() {
       />
 
       <Route
-        path="/share/:token"
-        element={<PublicShare />}
-      />
-
-      <Route
         path="/analytics"
         element={<Analytics />}
       />
@@ -63,6 +58,11 @@ export default function App() {
       <Route
         path="/twins/:twinId"
         element={<TwinDetails />}
+      />
+
+      <Route
+        path="/share/:token"
+        element={<SharedViewer />}
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />

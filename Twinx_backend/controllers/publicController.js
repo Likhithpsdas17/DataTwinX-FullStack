@@ -24,4 +24,31 @@ const downloadShare = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { accessShare, downloadShare };
+const previewShare = asyncHandler(async (req, res) => {
+
+  const file =
+    await shareService.previewShare(
+      req.params.token,
+      {
+        ipAddress: req.ip,
+        userAgent: req.get("user-agent"),
+      }
+    );
+
+  res.setHeader(
+    "Content-Type",
+    file.mimeType
+  );
+
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename="${file.originalName}"`
+  );
+
+  res.sendFile(file.filePath, {
+    root: process.cwd(),
+  });
+
+});
+
+module.exports = { accessShare, downloadShare, previewShare };

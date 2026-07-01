@@ -12,84 +12,99 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
   };
 
   return (
-    <aside
-      className={`sidebar ${mobileOpen ? "mobile-open" : ""}`}
-    >
-      <Link to="/" className="sidebar-brand">
-        Data <span>TwinX</span>
-      </Link>
+    <>
+      {/* Overlay */}
+      {mobileOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
-      <nav className="sidebar-nav">
-
+      <aside
+        className={`sidebar ${mobileOpen ? "mobile-open" : ""
+          }`}
+      >
         <Link
-          to="/dashboard"
-          className={`nav-item ${location.pathname === "/dashboard"
-              ? "active"
-              : ""
-            }`}
+          to="/"
+          className="sidebar-brand"
           onClick={() => setMobileOpen(false)}
         >
-          <Icons.Dashboard />
-          <span>Dashboard</span>
+          Data <span>TwinX</span>
         </Link>
 
-        <Link
-          to="/documents"
-          className={`nav-item ${location.pathname === "/documents"
-              ? "active"
-              : ""
-            }`}
-          onClick={() => setMobileOpen(false)}
-        >
-          <Icons.Documents />
-          <span>Documents</span>
-        </Link>
+        <nav className="sidebar-nav">
 
-        <Link
-          to="/sharing"
-          className={`nav-item ${location.pathname === "/sharing"
-              ? "active"
-              : ""
-            }`}
-          onClick={() => setMobileOpen(false)}
-        >
-          <Icons.Sharing />
-          <span>Sharing</span>
-        </Link>
+          <Link
+            to="/dashboard"
+            className={`nav-item ${location.pathname === "/dashboard"
+                ? "active"
+                : ""
+              }`}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Icons.Dashboard />
+            <span>Dashboard</span>
+          </Link>
 
-        <Link
-          to="/analytics"
-          className={`nav-item ${location.pathname === "/analytics"
-              ? "active"
-              : ""
-            }`}
-          onClick={() => setMobileOpen(false)}
-        >
-          <Icons.Analytics />
-          <span>Analytics</span>
-        </Link>
+          <Link
+            to="/documents"
+            className={`nav-item ${location.pathname === "/documents"
+                ? "active"
+                : ""
+              }`}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Icons.Documents />
+            <span>Documents</span>
+          </Link>
 
-        <Link
-          to="/settings"
-          className={`nav-item ${location.pathname === "/settings"
-              ? "active"
-              : ""
-            }`}
-          onClick={() => setMobileOpen(false)}
-        >
-          <Icons.Settings />
-          <span>Settings</span>
-        </Link>
+          <Link
+            to="/sharing"
+            className={`nav-item ${location.pathname === "/sharing"
+                ? "active"
+                : ""
+              }`}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Icons.Sharing />
+            <span>Sharing</span>
+          </Link>
 
-        <button
-          className="nav-item nav-item-logout"
-          onClick={logout}
-        >
-          <Icons.Logout />
-          <span>Logout</span>
-        </button>
+          <Link
+            to="/analytics"
+            className={`nav-item ${location.pathname === "/analytics"
+                ? "active"
+                : ""
+              }`}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Icons.Analytics />
+            <span>Analytics</span>
+          </Link>
 
-      </nav>
-    </aside>
+          <Link
+            to="/settings"
+            className={`nav-item ${location.pathname === "/settings"
+                ? "active"
+                : ""
+              }`}
+            onClick={() => setMobileOpen(false)}
+          >
+            <Icons.Settings />
+            <span>Settings</span>
+          </Link>
+
+          <button
+            className="nav-item nav-item-logout"
+            onClick={logout}
+          >
+            <Icons.Logout />
+            <span>Logout</span>
+          </button>
+
+        </nav>
+      </aside>
+    </>
   );
 }
